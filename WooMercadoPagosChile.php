@@ -16,9 +16,6 @@ include_once 'helpers/debug.php';
 include_once 'vendor/autoload.php';
 
 
-define("CTALA_MP_CLIENTID", "3456644172902315");
-define("CTALA_MP_CLIENTSECRET", "eZHN1ladm87NneOypJqp91iZqesN82nt");
-
 
 
 /*
