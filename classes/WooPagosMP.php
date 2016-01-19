@@ -207,6 +207,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
     function process_response() {
         if (isset($_REQUEST['id']) && isset($_REQUEST['topic'])) {
+            ctala_log_me($_REQUEST, "[RESPONSE]");
             $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
             $payment_info = $mp->get_payment_info($_GET["id"]);
             ctala_log_me($payment_info);
