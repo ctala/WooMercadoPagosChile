@@ -173,6 +173,8 @@ class WooPagosMP extends \WC_Payment_Gateway {
         );
 
         $preference_data["additional_info"] = $additional_info;
+        $preference_data["external_reference"] = $order_id;
+        $preference_data["order_id"] = $order_id;
         $preference_data["items"] = $items;
         $preference_data["back_urls"] = $back_urls;
         $preference_data["notification_url"] = $this->notification_url;
