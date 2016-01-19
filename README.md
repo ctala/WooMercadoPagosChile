@@ -1,4 +1,4 @@
-# wp-skeleton
+# WooMercadoPagosChile
 
 Sistema de Pagos con MercadoPago para Chile.
 
