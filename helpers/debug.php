@@ -1,6 +1,5 @@
 <?php
 
-
 /*
  * @author = Cristian Tala Sánchez
  * @web = http://www.cristiantala.cl
@@ -19,6 +18,23 @@ if (!function_exists("ctala_log_me")) {
         }
     }
 
+}
+
+function ctala_log_me_screen($param) {
+    echo '<pre>';
+
+    if (is_array($param)) {
+        print_r($param);
+    } else {
+        echo $param;
+    }
+
+    echo '</pre>';
+}
+
+function ctala_log_me_both($param) {
+    ctala_log_me($param);
+    ctala_log_me_screen($param);
 }
 
 ?>

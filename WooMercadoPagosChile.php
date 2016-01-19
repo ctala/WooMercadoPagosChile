@@ -3,8 +3,8 @@
 /*
   Plugin Name: WooMercadoPagosChile
   Plugin URI:  https://github.com/ctala/WooMercadoPagosChile
-  Description: Base para la Creación de otros plugins
-  Version:     1.0
+  Description: Sistema de pagos para Chile usando Mercado Pagos.
+  Version:     0.1
   Author:      Cristian Tala Sánchez
   Author URI:  http://www.cristiantala.cl
   License:     MIT
@@ -36,6 +36,8 @@ function init_WCMPChile() {
 
         function __construct() {
             parent::__construct();
+            $this->notification_url =  str_replace('https:', 'http:', add_query_arg('wc-api', 'WC_Gateway_Mercado_Pagos_Chile', home_url('/')));
+            add_action( 'woocommerce_api_wc_gateway_mercado_pagos_chile', array( $this, 'process_response' ) );
         }
 
     }
