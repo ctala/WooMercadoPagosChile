@@ -105,10 +105,12 @@ class WooPagosMP extends \WC_Payment_Gateway {
         echo '<p>' . __('¡Gracias! - Tu orden ahora está pendiente de pago.') . '</p>';
 
 
+        /*
+         * Asignamos los items a la orden
+         */
         $orderItems = $order->get_items();
-
-
         $items = array();
+
         foreach ($orderItems as $orderItem) {
             $id = $orderItem["item_meta"]["_product_id"][0];
             $qty = intval($orderItem["item_meta"]["_qty"][0]);
@@ -118,7 +120,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
             $items[] = array(
                 "title" => $product->get_title(),
                 "quantity" => $qty,
-                "currency_id" => "CLP",
+                "currency_id" => $order->get_order_currency(),
                 "unit_price" => $price
             );
 
@@ -151,13 +153,21 @@ class WooPagosMP extends \WC_Payment_Gateway {
          * Sobre los metodos de pago
          */
         $excluded_payment_methods = array(
-//            "id" => "master"
+            array(
+                "id" => "khipu"
+            ),
+            array(
+                "id" => "webpay"
+            ),
         );
         $excluded_payment_types = array(
-//            "id" => "ticket"
+
         );
 
-        $installments = 12;
+        /*
+         * Creo que son las cuotas :)
+         */
+        $installments = 1;
         $payment_methods = array(
             'excluded_payment_methods' => $excluded_payment_methods,
             'excluded_payment_types' => $excluded_payment_types,
@@ -199,7 +209,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         } else {
             $url = $preference['response']['init_point'];
         }
-        
+
         $order->update_status('on-hold', "Esperando el pago de la orden");
         \CTalaTools\Herramientas::setPostRedirect($url);
     }
@@ -227,7 +237,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
                 global $woocommerce;
                 $order = new \WC_Order($order_id);
                 //Cambio el estado del pago
-                $order->update_status('processing', "Se procesa el pago ID ".$idTrx);
+                $order->update_status('processing', "Se procesa el pago ID " . $idTrx);
                 //Saco el stock del producto.
                 $order->reduce_order_stock();
                 //Sacamos las cosas del carrito
