@@ -151,16 +151,16 @@ class WooPagosMP extends \WC_Payment_Gateway {
          * Sobre los metodos de pago
          */
         $excluded_payment_methods = array(
-            "id" => "master"
+//            "id" => "master"
         );
         $excluded_payment_types = array(
-            "id" => "ticket"
+//            "id" => "ticket"
         );
 
         $installments = 12;
         $payment_methods = array(
-//            'excluded_payment_methods' => $excluded_payment_methods,
-//            'excluded_payment_types' => $excluded_payment_types,
+            'excluded_payment_methods' => $excluded_payment_methods,
+            'excluded_payment_types' => $excluded_payment_types,
             'installments' => $installments
         );
 
