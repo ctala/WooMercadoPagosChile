@@ -14,7 +14,8 @@
     },
     "autoload": {
         "psr-4": {
-            "WooMercadoPagosChile\\": "classes/"
+            "WooMercadoPagosChile\\": "classes/",
+            "CTalaTools\\": "helpers/"
         }
     }
 

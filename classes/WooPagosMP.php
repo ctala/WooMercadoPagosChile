@@ -184,7 +184,21 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
         ctala_log_me_both($preference);
 
-        echo $preference['response']['init_point'];
+
+        /**
+         * La Url de redireccion dependera de si estamos en modo desarrollo.
+         */
+        $modoDesarrollo = $this->get_option('desarrollo');
+
+        ctala_log_me($modoDesarrollo, "[MODO DESARROLLO]");
+
+        if ($modoDesarrollo == "yes") {
+            $url = $preference['response']['sandbox_init_point'];
+        } else {
+            $url = $preference['response']['init_point'];
+        }
+
+        \CTalaTools\Herramientas::setPostRedirect($url);
     }
 
     /*

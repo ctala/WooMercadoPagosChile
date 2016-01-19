@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'WooMercadoPagosChile\\' => array($baseDir . '/classes'),
+    'CTalaTools\\' => array($baseDir . '/helpers'),
 );
