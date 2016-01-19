@@ -199,7 +199,8 @@ class WooPagosMP extends \WC_Payment_Gateway {
         } else {
             $url = $preference['response']['init_point'];
         }
-
+        
+        $order->update_status('on-hold', "Esperando el pago de la orden");
         \CTalaTools\Herramientas::setPostRedirect($url);
     }
 
@@ -208,13 +209,32 @@ class WooPagosMP extends \WC_Payment_Gateway {
      */
 
     function process_response() {
+        $SUFIJO = __FUNCTION__;
         if (isset($_REQUEST['id']) && isset($_REQUEST['topic'])) {
             ctala_log_me($_REQUEST, "[RESPONSE]");
             $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
             $payment_info = $mp->get_payment_info($_GET["id"]);
             ctala_log_me($payment_info);
             if ($payment_info["status"] == 200) {
-                print_r($payment_info["response"]);
+                $response = $payment_info["response"];
+                $collection = $response['collection'];
+                $idTrx = $collection['id'];
+                ctala_log_me("ESTADO 200", $SUFIJO);
+                ctala_log_me(print_r($response, true));
+                //El pago se hizo de manera correcta, obtengo la OC para procesar el pago
+                $order_id = $response['collection']['order_id'];
+                //Obtengo el objeto de la OC desde woocommerce
+                global $woocommerce;
+                $order = new \WC_Order($order_id);
+                //Cambio el estado del pago
+                $order->update_status('processing', "Se procesa el pago ID ".$idTrx);
+                //Saco el stock del producto.
+                $order->reduce_order_stock();
+                //Sacamos las cosas del carrito
+                $woocommerce->cart->empty_cart();
+            } else {
+                ctala_log_me($payment_info["status"], $SUFIJO);
+                ctala_log_me(print_r($payment_info["response"], true));
             }
         }
     }
