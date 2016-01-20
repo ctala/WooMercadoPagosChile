@@ -12,21 +12,23 @@ Sistema de Pagos con MercadoPago para Chile.
 
 ### Usando GIT
 
-En el directorio de plugins de wordpress ejeutar el siguiente comando en consola.
+En el directorio de plugins de wordpress ejecutar el siguiente comando en consola.
+```bash
     git clone https://github.com/ctala/WooMercadoPagosChile.git
-
+```
 Con esto ahora en el modo de desarrollo puedes actualizar a la ultima version sin problemas.
 
 
 ## TODO
 * Añadir tipos de pago para poder excluir de manera selectiva.
+* Eliminar debug de la redirección
 
 ## Usuarios de Prueba
 
 ### VENDEDOR
 Con este usuario enlazaremos woocommerce para las pruebas.
 
-```
+```bash
     {
         "id":203742794,
         "nickname":"TETE1929073",
