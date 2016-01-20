@@ -225,30 +225,43 @@ class WooPagosMP extends \WC_Payment_Gateway {
         if (isset($id) && isset($topic)) {
             ctala_log_me("TOPIC : " . $topic, __FUNCTION__);
             ctala_log_me($_REQUEST, __FUNCTION__);
+            $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
+
+            /*
+             * Creamos el merchant info dependiendo del request.
+             */
             if ($topic == "payment") {
-                $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
-                $payment_info = $mp->get_payment_info($id);
-                ctala_log_me($payment_info);
-                if ($payment_info["status"] == 200) {
-                    $response = $payment_info["response"];
-                    $collection = $response['collection'];
-                    $idTrx = $collection['id'];
-                    ctala_log_me("ESTADO 200", $SUFIJO);
-                    ctala_log_me(print_r($response, true));
-                    //El pago se hizo de manera correcta, obtengo la OC para procesar el pago
-                    $order_id = $response['collection']['order_id'];
-                    //Obtengo el objeto de la OC desde woocommerce
-                    global $woocommerce;
-                    $order = new \WC_Order($order_id);
-                    //Cambio el estado del pago
-                    $order->update_status('processing', "Se procesa el pago ID " . $idTrx);
-                    //Saco el stock del producto.
-                    $order->reduce_order_stock();
-                    //Sacamos las cosas del carrito
-                    $woocommerce->cart->empty_cart();
+                $payment_info = $mp->get("/collections/notifications/" . $id);
+                $merchant_order_info = $mp->get("/merchant_orders/" . $payment_info["response"]["collection"]["merchant_order_id"]);
+            } elseif ($topic == 'merchant_order') {
+                $merchant_order_info = $mp->get("/merchant_orders/" . $_GET["id"]);
+            }
+
+            /*
+             * Logeamos los datos.
+             */
+            ctala_log_me($merchant_order_info, __FUNCTION__);
+
+            if ($merchant_order_info["status"] == 200) {
+                // If the payment's transaction amount is equal (or bigger) than the merchant_order's amount you can release your items 
+                $paid_amount = 0;
+
+                foreach ($merchant_order_info["response"]["payments"] as $payment) {
+                    if ($payment['status'] == 'approved') {
+                        $paid_amount += $payment['transaction_amount'];
+                    }
+                }
+
+                if ($paid_amount >= $merchant_order_info["response"]["total_amount"]) {
+                    if (count($merchant_order_info["response"]["shipments"]) > 0) { // The merchant_order has shipments
+                        if ($merchant_order_info["response"]["shipments"][0]["status"] == "ready_to_ship") {
+                            ctala_log_me("Totally paid. Print the label and release your item.");
+                        }
+                    } else { // The merchant_order don't has any shipments
+                        ctala_log_me("Totally paid. Release your item.");
+                    }
                 } else {
-                    ctala_log_me($payment_info["status"], $SUFIJO);
-                    ctala_log_me(print_r($payment_info["response"], true));
+                    print_r("Not paid yet. Do not release your item.");
                 }
             }
         }
