@@ -60,3 +60,8 @@ Fuente : https://www.mercadopago.com.br/developers/es/related/test-payments/
 * Visa : 4168 8188 4444 7115
 * Master Card : 5416 7526 0258 2580
 * American Express : 3757 781744 61804
+
+## Usuario Real
+
+Para obtener los datos reales para utilizar el plugin, logueate en MercadoPago.cl 
+y luego ve al siguiente link : https://www.mercadopago.com/mlc/herramientas/aplicaciones 
