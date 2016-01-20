@@ -18,6 +18,9 @@ En el directorio de plugins de wordpress ejeutar el siguiente comando en consola
 Con esto ahora en el modo de desarrollo puedes actualizar a la ultima version sin problemas.
 
 
+## TODO
+* Añadir tipos de pago para poder excluir de manera selectiva.
+
 ## Usuarios de Prueba
 
 ### VENDEDOR
