@@ -139,9 +139,9 @@ class WooPagosMP extends \WC_Payment_Gateway {
         /*
          * Agregamos las URL Correspondientes a las respuestas.
          */
-        $successUrl = $this->get_return_url($order) . "status=success";
-        $failureUrl = $this->get_return_url($order) . "status=fail";
-        $pendingUrl = $this->get_return_url($order) . "status=pending";
+        $successUrl = $this->get_return_url($order);
+        $failureUrl = $this->get_return_url($order);
+        $pendingUrl = $this->get_return_url($order);
         ;
 
         $back_urls = array(
