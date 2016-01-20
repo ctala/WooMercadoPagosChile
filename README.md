@@ -2,6 +2,22 @@
 
 Sistema de Pagos con MercadoPago para Chile.
 
+## Requerimientos
+
+* PHP5
+* CURL
+* extensión PHP-CURL
+
+## Instalación
+
+### Usando GIT
+
+En el directorio de plugins de wordpress ejeutar el siguiente comando en consola.
+    git clone https://github.com/ctala/WooMercadoPagosChile.git
+
+Con esto ahora en el modo de desarrollo puedes actualizar a la ultima version sin problemas.
+
+
 ## Usuarios de Prueba
 
 ### VENDEDOR
