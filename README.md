@@ -34,3 +34,13 @@ Sera el encargado de realizar las compras.
     }
 
 ```
+
+### Datos tarjetas de credito
+
+Fuente : https://www.mercadopago.com.br/developers/es/related/test-payments/
+
+#### Chile
+
+* Visa : 4168 8188 4444 7115
+* Master Card : 5416 7526 0258 2580
+* American Express : 3757 781744 61804

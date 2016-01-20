@@ -140,8 +140,9 @@ class WooPagosMP extends \WC_Payment_Gateway {
          * Agregamos las URL Correspondientes a las respuestas.
          */
         $successUrl = $this->get_return_url($order);
-        $failureUrl = $this->get_return_url($order);
-        $pendingUrl = $this->get_return_url($order);
+        $failureUrl = $this->get_return_url($order) . "status=fail";
+        $pendingUrl = $this->get_return_url($order) . "status=pending";
+        ;
 
         $back_urls = array(
             'success' => $successUrl,
@@ -161,7 +162,6 @@ class WooPagosMP extends \WC_Payment_Gateway {
             ),
         );
         $excluded_payment_types = array(
-
         );
 
         /*
@@ -220,10 +220,13 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
     function process_response() {
         $SUFIJO = __FUNCTION__;
-        if (isset($_REQUEST['id']) && isset($_REQUEST['topic'])) {
-            ctala_log_me($_REQUEST, "[RESPONSE]");
+        $id = $_REQUEST['id'];
+        $topic = $_REQUEST['topic'];
+        if (isset($id) && isset($topic)) {
+            ctala_log_me("TOPIC : ".$topic, __FUNCTION__);
+            ctala_log_me($_REQUEST, __FUNCTION__);
             $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
-            $payment_info = $mp->get_payment_info($_GET["id"]);
+            $payment_info = $mp->get_payment_info($id);
             ctala_log_me($payment_info);
             if ($payment_info["status"] == 200) {
                 $response = $payment_info["response"];
