@@ -86,7 +86,7 @@ function ctala_woo_mercado_pago_template($template, $template_name, $template_pa
  */
 
 function ctala_theme_name_scripts() {
-    $bootstrapMin = "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js";
+    $bootstrapMin = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css";
     wp_enqueue_style('ctala_bootstrap', $bootstrapMin);
      
 }

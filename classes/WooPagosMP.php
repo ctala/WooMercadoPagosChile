@@ -140,8 +140,8 @@ class WooPagosMP extends \WC_Payment_Gateway {
          * Agregamos las URL Correspondientes a las respuestas.
          */
         $successUrl = $this->get_return_url($order);
-        $failureUrl = $this->get_return_url($order) . "status=fail";
-        $pendingUrl = $this->get_return_url($order) . "status=pending";
+        $failureUrl = $this->get_return_url($order);
+        $pendingUrl = $this->get_return_url($order);
         ;
 
         $back_urls = array(
@@ -150,6 +150,16 @@ class WooPagosMP extends \WC_Payment_Gateway {
             'failure' => $failureUrl
         );
 
+        /*
+         * Sobre el costo del envio
+         */
+
+        $shippingCost = floatval($order->get_total_shipping());
+
+
+        $shipments = array(
+            "cost" => $shippingCost,
+        );
         /**
          * Sobre los metodos de pago
          */
@@ -190,6 +200,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $preference_data["notification_url"] = $this->notification_url;
         $preference_data["auto_return"] = "approved";
         $preference_data["payment_methods"] = $payment_methods;
+        $preference_data["shipments"] = $shipments;
 
 
         $preference = $mp->create_preference($preference_data);
@@ -210,7 +221,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
             $url = $preference['response']['init_point'];
         }
 
-        $order->update_status('on-hold', "Esperando el pago de la orden");
+        $order->update_status('pending', "Esperando el pago de la orden");
         \CTalaTools\Herramientas::setPostRedirect($url);
     }
 
@@ -223,31 +234,60 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $id = $_REQUEST['id'];
         $topic = $_REQUEST['topic'];
         if (isset($id) && isset($topic)) {
-            ctala_log_me("TOPIC : ".$topic, __FUNCTION__);
+            ctala_log_me("TOPIC : " . $topic, __FUNCTION__);
             ctala_log_me($_REQUEST, __FUNCTION__);
             $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
-            $payment_info = $mp->get_payment_info($id);
-            ctala_log_me($payment_info);
-            if ($payment_info["status"] == 200) {
-                $response = $payment_info["response"];
-                $collection = $response['collection'];
-                $idTrx = $collection['id'];
-                ctala_log_me("ESTADO 200", $SUFIJO);
-                ctala_log_me(print_r($response, true));
-                //El pago se hizo de manera correcta, obtengo la OC para procesar el pago
-                $order_id = $response['collection']['order_id'];
-                //Obtengo el objeto de la OC desde woocommerce
+
+            /*
+             * Creamos el merchant info dependiendo del request.
+             */
+            if ($topic == "payment") {
+                $payment_info = $mp->get("/collections/notifications/" . $id);
+                $merchant_order_info = $mp->get("/merchant_orders/" . $payment_info["response"]["collection"]["merchant_order_id"]);
+            } elseif ($topic == 'merchant_order') {
+                $merchant_order_info = $mp->get("/merchant_orders/" . $_GET["id"]);
+            }
+
+            /*
+             * Logeamos los datos.
+             */
+            ctala_log_me($merchant_order_info, __FUNCTION__);
+
+            if ($merchant_order_info["status"] == 200) {
+                //Usamos la variabel [external_reference] para el order_id
+                $order_id = $merchant_order_info["response"]["external_reference"];
+                $TrxId = $merchant_order_info["response"]["id"];
+                $PreferenceId = $merchant_order_info["response"]["preference_id"];
+
+                //Creamos la OC para agregar las notas y completar en caso de que sea necesario.
                 global $woocommerce;
                 $order = new \WC_Order($order_id);
-                //Cambio el estado del pago
-                $order->update_status('processing', "Se procesa el pago ID " . $idTrx);
-                //Saco el stock del producto.
-                $order->reduce_order_stock();
-                //Sacamos las cosas del carrito
-                $woocommerce->cart->empty_cart();
-            } else {
-                ctala_log_me($payment_info["status"], $SUFIJO);
-                ctala_log_me(print_r($payment_info["response"], true));
+
+                $paid_amount = 0;
+
+                foreach ($merchant_order_info["response"]["payments"] as $payment) {
+                    if ($payment['status'] == 'approved') {
+                        $paid_amount += $payment['transaction_amount'];
+                    }
+                }
+
+                if ($paid_amount >= $merchant_order_info["response"]["total_amount"]) {
+                    if (count($merchant_order_info["response"]["shipments"]) > 0) { // The merchant_order has shipments
+                        if ($merchant_order_info["response"]["shipments"][0]["status"] == "ready_to_ship") {
+                            ctala_log_me("Totally paid. Print the label and release your item.");
+                            $order->update_status('processing', "Pago recibido, se procesa la orden");
+                            wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
+                            wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
+                        }
+                    } else { // The merchant_order don't has any shipments
+                        ctala_log_me("Totally paid. Release your item.");
+                        $order->update_status('processing', "Pago recibido, se procesa la orden");
+                        wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
+                        wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
+                    }
+                } else {
+                    ctala_log_me("Not paid yet. Do not release your item.");
+                }
             }
         }
     }
