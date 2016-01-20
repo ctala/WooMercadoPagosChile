@@ -13,7 +13,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( $order ) : ?>
         
-	<?php if ( $order->has_status( 'failed' ) || $_GET['status']=="failed" ) : ?>
+        <?php
+        
+        if($order->has_status('pending'))
+        {
+            
+        }
+        
+        if($order->has_status('failed'))
+        {
+            
+        }
+        
+        if($order->has_status('pending'))
+        {
+            
+        }
+        
+        ?>
+
+	<?php if ( $order->has_status( 'failed' ) ) : ?>
 
 		<p><?php _e( 'Unfortunately your order cannot be processed as the originating bank/merchant has declined your transaction.', 'woocommerce' ); ?></p>
 

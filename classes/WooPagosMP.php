@@ -155,11 +155,10 @@ class WooPagosMP extends \WC_Payment_Gateway {
          */
 
         $shippingCost = floatval($order->get_total_shipping());
-        
-        
+
+
         $shipments = array(
             "cost" => $shippingCost,
-//            "mode" => "custom"
         );
         /**
          * Sobre los metodos de pago
@@ -255,7 +254,15 @@ class WooPagosMP extends \WC_Payment_Gateway {
             ctala_log_me($merchant_order_info, __FUNCTION__);
 
             if ($merchant_order_info["status"] == 200) {
-                // If the payment's transaction amount is equal (or bigger) than the merchant_order's amount you can release your items 
+                //Usamos la variabel [external_reference] para el order_id
+                $order_id = $merchant_order_info["response"]["external_reference"];
+                $TrxId = $merchant_order_info["response"]["id"];
+                $PreferenceId = $merchant_order_info["response"]["preference_id"];
+
+                //Creamos la OC para agregar las notas y completar en caso de que sea necesario.
+                global $woocommerce;
+                $order = new \WC_Order($order_id);
+
                 $paid_amount = 0;
 
                 foreach ($merchant_order_info["response"]["payments"] as $payment) {
@@ -268,9 +275,15 @@ class WooPagosMP extends \WC_Payment_Gateway {
                     if (count($merchant_order_info["response"]["shipments"]) > 0) { // The merchant_order has shipments
                         if ($merchant_order_info["response"]["shipments"][0]["status"] == "ready_to_ship") {
                             ctala_log_me("Totally paid. Print the label and release your item.");
+                            $order->update_status('processing', "Pago recibido, se procesa la orden");
+                            wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
+                            wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                         }
                     } else { // The merchant_order don't has any shipments
                         ctala_log_me("Totally paid. Release your item.");
+                        $order->update_status('processing', "Pago recibido, se procesa la orden");
+                        wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
+                        wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                     }
                 } else {
                     ctala_log_me("Not paid yet. Do not release your item.");
