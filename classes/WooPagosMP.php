@@ -223,31 +223,33 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $id = $_REQUEST['id'];
         $topic = $_REQUEST['topic'];
         if (isset($id) && isset($topic)) {
-            ctala_log_me("TOPIC : ".$topic, __FUNCTION__);
+            ctala_log_me("TOPIC : " . $topic, __FUNCTION__);
             ctala_log_me($_REQUEST, __FUNCTION__);
-            $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
-            $payment_info = $mp->get_payment_info($id);
-            ctala_log_me($payment_info);
-            if ($payment_info["status"] == 200) {
-                $response = $payment_info["response"];
-                $collection = $response['collection'];
-                $idTrx = $collection['id'];
-                ctala_log_me("ESTADO 200", $SUFIJO);
-                ctala_log_me(print_r($response, true));
-                //El pago se hizo de manera correcta, obtengo la OC para procesar el pago
-                $order_id = $response['collection']['order_id'];
-                //Obtengo el objeto de la OC desde woocommerce
-                global $woocommerce;
-                $order = new \WC_Order($order_id);
-                //Cambio el estado del pago
-                $order->update_status('processing', "Se procesa el pago ID " . $idTrx);
-                //Saco el stock del producto.
-                $order->reduce_order_stock();
-                //Sacamos las cosas del carrito
-                $woocommerce->cart->empty_cart();
-            } else {
-                ctala_log_me($payment_info["status"], $SUFIJO);
-                ctala_log_me(print_r($payment_info["response"], true));
+            if ($topic == "payment") {
+                $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
+                $payment_info = $mp->get_payment_info($id);
+                ctala_log_me($payment_info);
+                if ($payment_info["status"] == 200) {
+                    $response = $payment_info["response"];
+                    $collection = $response['collection'];
+                    $idTrx = $collection['id'];
+                    ctala_log_me("ESTADO 200", $SUFIJO);
+                    ctala_log_me(print_r($response, true));
+                    //El pago se hizo de manera correcta, obtengo la OC para procesar el pago
+                    $order_id = $response['collection']['order_id'];
+                    //Obtengo el objeto de la OC desde woocommerce
+                    global $woocommerce;
+                    $order = new \WC_Order($order_id);
+                    //Cambio el estado del pago
+                    $order->update_status('processing', "Se procesa el pago ID " . $idTrx);
+                    //Saco el stock del producto.
+                    $order->reduce_order_stock();
+                    //Sacamos las cosas del carrito
+                    $woocommerce->cart->empty_cart();
+                } else {
+                    ctala_log_me($payment_info["status"], $SUFIJO);
+                    ctala_log_me(print_r($payment_info["response"], true));
+                }
             }
         }
     }
