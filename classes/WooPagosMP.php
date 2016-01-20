@@ -150,6 +150,17 @@ class WooPagosMP extends \WC_Payment_Gateway {
             'failure' => $failureUrl
         );
 
+        /*
+         * Sobre el costo del envio
+         */
+
+        $shippingCost = floatval($order->get_total_shipping());
+        
+        
+        $shipments = array(
+            "cost" => $shippingCost,
+//            "mode" => "custom"
+        );
         /**
          * Sobre los metodos de pago
          */
@@ -190,6 +201,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $preference_data["notification_url"] = $this->notification_url;
         $preference_data["auto_return"] = "approved";
         $preference_data["payment_methods"] = $payment_methods;
+        $preference_data["shipments"] = $shipments;
 
 
         $preference = $mp->create_preference($preference_data);
@@ -210,7 +222,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
             $url = $preference['response']['init_point'];
         }
 
-        $order->update_status('on-hold', "Esperando el pago de la orden");
+        $order->update_status('pending', "Esperando el pago de la orden");
         \CTalaTools\Herramientas::setPostRedirect($url);
     }
 
@@ -261,7 +273,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
                         ctala_log_me("Totally paid. Release your item.");
                     }
                 } else {
-                    print_r("Not paid yet. Do not release your item.");
+                    ctala_log_me("Not paid yet. Do not release your item.");
                 }
             }
         }
