@@ -18,6 +18,13 @@ En el directorio de plugins de wordpress ejecutar el siguiente comando en consol
 ```
 Con esto ahora en el modo de desarrollo puedes actualizar a la ultima version sin problemas.
 
+### Utilizando el ZIP
+
+Descargar la última versión del repositorio en el siguiente link :
+```
+https://github.com/ctala/WooMercadoPagosChile/archive/master.zip
+```
+Luego simplemente agregar el plugin como cualquier otro que agregarías a wordpress al subirlo.
 
 ## TODO
 * Añadir tipos de pago para poder excluir de manera selectiva.
