@@ -1,4 +1,4 @@
-# WooMercadoPagosChile
+# eCommerce MercadoPago Chile
 
 Sistema de Pagos con MercadoPago para Chile.
 
