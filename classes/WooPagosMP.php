@@ -10,6 +10,19 @@ namespace WooMercadoPagosChile;
 class WooPagosMP extends \WC_Payment_Gateway {
 
     var $notification_url;
+    var $listaMediosPago = array(
+        "visa" => "Visa",
+        "master" => "MasterCard",
+        "amex" => "American Express",
+        "magna" => "Magna",
+        "presto" => "Presto",
+        "cmr" => "CMR",
+        "diners" => "Diners",
+        "servipag" => "Servipag",
+//        "account_money" => "Dinero en tu cuenta de MP",
+        "webpay" => "Webpay / Transbank",
+        "khipu" => "Khipu"
+    );
 
     function __construct() {
         $this->id = 'WooPagosMP';
@@ -67,6 +80,12 @@ class WooPagosMP extends \WC_Payment_Gateway {
             'secretkey' => array(
                 'title' => __('Secret Key', 'woocommerce'),
                 'type' => 'text',
+            ),
+            'mediosdepago' => array(
+                'title' => __('Pagos Habilitados', 'woocommerce'),
+                'description' => __('Selecciona los medios de pago que no quieres recibir con MP', 'woocommerce'),
+                'type' => 'multiselect',
+                'options' => $this->listaMediosPago
             ),
         );
     }
@@ -162,15 +181,25 @@ class WooPagosMP extends \WC_Payment_Gateway {
         );
         /**
          * Sobre los metodos de pago
+         * La variable que contiene los metodos de pago excluidos es "mediosdepago"
          */
-        $excluded_payment_methods = array(
-            array(
-                "id" => "khipu"
-            ),
-            array(
-                "id" => "webpay"
-            ),
-        );
+        $ePayments = $this->get_option('mediosdepago');
+
+        ctala_log_me_both($ePayments);
+        
+
+        $excluded_payment_methods = array();
+
+        foreach ($ePayments as $payment_method => $id) {
+            $excluded_payment_methods[] = array(
+                "id" => $id
+            );
+        }
+
+        ctala_log_me_both($excluded_payment_methods);
+//        die();
+
+        
         $excluded_payment_types = array(
         );
 
