@@ -27,7 +27,7 @@ https://github.com/ctala/WooMercadoPagosChile/archive/master.zip
 Luego simplemente agregar el plugin como cualquier otro que agregarías a wordpress al subirlo.
 
 ## TODO
-* Añadir tipos de pago para poder excluir de manera selectiva.
+* ~~Añadir tipos de pago para poder excluir de manera selectiva.~~ **25/01/2015**
 * Eliminar debug de la redirección
 
 ## Usuarios de Prueba
