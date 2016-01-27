@@ -77,3 +77,9 @@ Fuente : https://www.mercadopago.com.br/developers/es/related/test-payments/
 
 Para obtener los datos reales para utilizar el plugin, logueate en MercadoPago.cl 
 y luego ve al siguiente link : https://www.mercadopago.com/mlc/herramientas/aplicaciones 
+
+
+# Changelog
+
+* V1.1 Se incluyen las librerías de Bootstrap de manera local.
+* V1.0 Version Inicial

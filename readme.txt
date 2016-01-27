@@ -1,4 +1,4 @@
-=== eCommerce MercadoPago Chile ===
+=== Woo MercadoPago Chile ===
 Contributors: ctala
 Tags: ecommerce, woocommerce, chile
 Requires at least: 3.0.1
@@ -6,7 +6,7 @@ Tested up to: 3.4
 Stable tag: 1.0
 License: MIT
 License URI: http://opensource.org/licenses/MIT
-Plugin Name: eCommerce MercadoPago Chile
+Plugin Name: Woo MercadoPago Chile
 Plugin URI:  https://github.com/ctala/WooMercadoPagosChile
  
 
@@ -29,6 +29,9 @@ You must configure the plugin through the WooCommerce Settings.
  
 
 == Changelog ==
+
+= 1.1 =
+* Added CSS as a local file.
 
 = 1.0 =
 * First stable version. 
