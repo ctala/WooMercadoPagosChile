@@ -30,6 +30,9 @@ You must configure the plugin through the WooCommerce Settings.
 
 == Changelog ==
 
+= 1.2 = 
+* Added JS as a local file
+
 = 1.1 =
 * Added CSS as a local file.
 

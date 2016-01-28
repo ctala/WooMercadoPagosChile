@@ -81,5 +81,6 @@ y luego ve al siguiente link : https://www.mercadopago.com/mlc/herramientas/apli
 
 # Changelog
 
+* V1.2 Se incluye JQuery como archivo en vez de url.
 * V1.1 Se incluyen las librerías de Bootstrap de manera local.
 * V1.0 Version Inicial
