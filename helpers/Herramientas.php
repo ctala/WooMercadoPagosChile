@@ -15,10 +15,13 @@ namespace CTalaTools;
 class Herramientas {
 
     static function setPostRedirect($url) {
+        $dir = plugin_dir_url(__FILE__);
+        $jqueryMin = $dir . "../js/jquery.min.js";
+         
         ?>
         <html>
             <head>
-                <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+                <script src="<?php echo $jqueryMin?>"></script>
             </head> 
             <body style="">
                 <form name="WS1" id="WS1" action="<?= $url ?>" method="POST" onl>
