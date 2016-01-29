@@ -30,6 +30,11 @@ You must configure the plugin through the WooCommerce Settings.
 
 == Changelog ==
 
+= 1.3 =
+* Deleted Jquery library
+* Using JQuery library
+* Added new JS to redirect on page load.
+
 = 1.2 = 
 * Added JS as a local file
 

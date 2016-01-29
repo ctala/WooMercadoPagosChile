@@ -14,26 +14,12 @@ namespace CTalaTools;
  */
 class Herramientas {
 
-    static function setPostRedirect($url) {
-        $dir = plugin_dir_url(__FILE__);
-        $jqueryMin = $dir . "../js/jquery.min.js";
-         
+    static function setPostRedirectSimple($url) {
         ?>
-        <html>
-            <head>
-                <script src="<?php echo $jqueryMin?>"></script>
-            </head> 
-            <body style="">
-                <form name="WS1" id="WS1" action="<?= $url ?>" method="POST" onl>
-                    <input type="submit" id="submit_payment_gateway" style="visibility: hidden;"> 
-                </form>
-                <script>
-                    $(document).ready(function () {
-                        $("#WS1").submit();
-                    });
-                </script>
-            </body>
-        </html>
+
+        <form name="WS1" id="WS1" action="<?= $url ?>" method="POST" onl>
+            <input type="submit" id="submit_payment_gateway" style="visibility: hidden;"> 
+        </form>
 
         <?php
     }

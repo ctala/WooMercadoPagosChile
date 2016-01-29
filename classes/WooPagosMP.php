@@ -116,6 +116,11 @@ class WooPagosMP extends \WC_Payment_Gateway {
      * funcion process payment.
      */
     function receipt_page($order_id) {
+        $dir = plugin_dir_url(__FILE__);
+        $js = $dir . "../js/redirect.js";
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('ctala-redirect', $js, array('jquery'));
+
         global $woocommerce;
         $order = new \WC_Order($order_id);
         $preference_data = array();
@@ -186,7 +191,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $ePayments = $this->get_option('mediosdepago');
 
         ctala_log_me_both($ePayments);
-        
+
 
         $excluded_payment_methods = array();
 
@@ -199,7 +204,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         ctala_log_me_both($excluded_payment_methods);
 //        die();
 
-        
+
         $excluded_payment_types = array(
         );
 
@@ -251,7 +256,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         }
 
         $order->update_status('pending', "Esperando el pago de la orden");
-        \CTalaTools\Herramientas::setPostRedirect($url);
+        \CTalaTools\Herramientas::setPostRedirectSimple($url);
     }
 
     /*
