@@ -35,7 +35,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
         // Define user set variables
         $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
+        $this->description = $this->getDescription();
         $this->notification_url = str_replace('https:', 'http:', add_query_arg('wc-api', 'WooPagosMP', home_url('/')));
 
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
@@ -61,17 +61,17 @@ class WooPagosMP extends \WC_Payment_Gateway {
                 'label' => "Utilizaremos un Sandbox ?",
                 'default' => 'yes'
             ),
+            'description' => array(
+                'title' => __('Customer Message', 'woocommerce'),
+                'type' => 'textarea',
+                'default' => 'Con Mercado Pago puedes pagar a través de distintas plataformas, además acepta 6 cuotas sin interés'
+            ),
             'title' => array(
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
                 'default' => "Mercado Pagos Chile",
                 'desc_tip' => true,
-            ),
-            'description' => array(
-                'title' => __('Customer Message', 'woocommerce'),
-                'type' => 'textarea',
-                'default' => 'MP'
             ),
             'clientid' => array(
                 'title' => __('Client ID', 'woocommerce'),
@@ -103,6 +103,18 @@ class WooPagosMP extends \WC_Payment_Gateway {
         global $woocommerce;
         $order = new \WC_Order($order_id);
 
+        $installments = $this->checkInstallments($_POST["cuotasMP"]);
+
+
+        /*
+         * Se agrega el meta dato de cuotas.
+         * Si ya existe se actualiza
+         */
+
+        if (!add_post_meta($order_id, "CUOTASMP", $installments, true)) {
+            update_post_meta($order_id, "CUOTASMP", $installments);
+        }
+
         return array(
             'result' => 'success',
             'redirect' => $order->get_checkout_payment_url(true)
@@ -127,6 +139,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $mp = new \MP($this->get_option('clientid'), $this->get_option('secretkey'));
 
         echo '<p>' . __('¡Gracias! - Tu orden ahora está pendiente de pago.') . '</p>';
+        echo '<p>' . __('Ahora serás redirigido automáticamente a Mercado Pago') . '</p>';
 
 
         /*
@@ -156,7 +169,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
             unset($id);
             unset($qty);
         }
-        ctala_log_me_both($items);
+        ctala_log_me($items);
 
 
 
@@ -190,7 +203,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
          */
         $ePayments = $this->get_option('mediosdepago');
 
-        ctala_log_me_both($ePayments);
+        ctala_log_me($ePayments);
 
 
         $excluded_payment_methods = array();
@@ -201,8 +214,9 @@ class WooPagosMP extends \WC_Payment_Gateway {
             );
         }
 
-        ctala_log_me_both($excluded_payment_methods);
-//        die();
+        ctala_log_me($excluded_payment_methods);
+
+
 
 
         $excluded_payment_types = array(
@@ -211,7 +225,10 @@ class WooPagosMP extends \WC_Payment_Gateway {
         /*
          * Creo que son las cuotas :)
          */
-        $installments = 1;
+        $installments = intval(get_post_meta($order_id, "CUOTASMP", true));
+
+        ctala_log_me("CUOTAS : " . $installments);
+
         $payment_methods = array(
             'excluded_payment_methods' => $excluded_payment_methods,
             'excluded_payment_types' => $excluded_payment_types,
@@ -239,7 +256,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
         $preference = $mp->create_preference($preference_data);
 
-        ctala_log_me_both($preference);
+        ctala_log_me($preference);
 
 
         /**
@@ -324,6 +341,51 @@ class WooPagosMP extends \WC_Payment_Gateway {
                 }
             }
         }
+    }
+
+    /**
+     * Retorna la descripción incluyendo las cuotas
+     * @return type
+     */
+    function getDescription() {
+        $description = $this->get_option('description');
+        ;
+        $cuotas = $this->generateCuotas();
+
+        return $description . "<hr>" . $cuotas;
+    }
+
+    /**
+     * Genera parte del formulario para seleccionar las cuotas.
+     * @return string
+     */
+    function generateCuotas() {
+        $resultado = '
+          <select name="cuotasMP">
+            <option value="1">Pagar en una cuota</option>
+            <option value="3">Pagar en tres cuotas </option>
+            <option value="6">Pagar en seis cuotas sin interés</option>
+          </select>';
+        return $resultado;
+    }
+
+    /*
+     * Esta función corrobora que las cuotas correspondan a lo aceptado por el comercio
+     * De no estar bien formadas retorna 1.
+     */
+
+    function checkInstallments($installments) {
+        $resultado = 1;
+        $installments = intval($installments);
+        
+        if (!is_int($installments)) {
+            return $resultado;
+        }
+
+        if ($installments > 0 && $installments <= 6) {
+            $resultado = $installments;
+        }
+        return $resultado;
     }
 
 }
