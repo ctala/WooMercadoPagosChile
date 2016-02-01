@@ -6,9 +6,6 @@ Tested up to: 3.4
 Stable tag: 1.4
 License: MIT
 License URI: http://opensource.org/licenses/MIT
-Plugin Name: Woo MercadoPago Chile
-Plugin URI:  https://github.com/ctala/WooMercadoPagosChile
- 
 
 Sistema de pagos para Chile usando Mercado Pagos.
 
