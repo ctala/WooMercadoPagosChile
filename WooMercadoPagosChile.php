@@ -4,7 +4,7 @@
   Plugin Name: Woo Mercado Pagos Chile
   Plugin URI:  https://github.com/ctala/WooMercadoPagosChile
   Description: Sistema de pagos para Chile usando Mercado Pagos.
-  Version:     1.4
+  Version:     1.4.1
   Author:      Cristian Tala Sánchez
   Author URI:  http://www.cristiantala.cl
   License:     MIT
@@ -83,12 +83,15 @@ function ctala_woo_mercado_pago_template($template, $template_name, $template_pa
 
 /*
  * Agregamos el CSS que sera necesario para los mensajes en la pagina de thankyou
+ * Lo agregamos solo en la página de checkout
  */
 
 function ctala_theme_name_scripts() {
-    $dir = plugin_dir_url( __FILE__ );
-    $bootstrapMin = $dir . "css/bootstrap.min.css";
-    wp_enqueue_style('ctala_bootstrap', $bootstrapMin);
+    if (is_order_received_page()) {
+        $dir = plugin_dir_url(__FILE__);
+        $bootstrapMin = $dir . "css/bootstrap.min.css";
+        wp_enqueue_style('ctala_bootstrap', $bootstrapMin);
+    }
 }
 
 add_action('wp_enqueue_scripts', 'ctala_theme_name_scripts');
