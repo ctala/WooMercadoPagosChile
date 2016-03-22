@@ -333,7 +333,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
                             ctala_log_me($mensaje);
                             $order->update_status('processing', "Pago recibido, se procesa la orden : $TrxId");
                             $data['order_note'] = $mensaje;
-                            WC_API_Orders::create_order_note($order_id, $data);
+                            \WC_API_Orders::create_order_note($order_id, $data);
                             wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
                             wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                         }
@@ -342,17 +342,17 @@ class WooPagosMP extends \WC_Payment_Gateway {
                         ctala_log_me($mensaje);
                         $order->update_status('processing', "Pago recibido, se procesa la orden : $TrxId");
                         $data['order_note'] = $mensaje;
-                        WC_API_Orders::create_order_note($order_id, $data);
+                        \WC_API_Orders::create_order_note($order_id, $data);
                         wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
                         wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                     }
                 } else {
-                    
+
                     $mensaje = "Aun no pagado.";
                     $data['order_note'] = $mensaje;
-                    WC_API_Orders::create_order_note($order_id, $data);
+                    \WC_API_Orders::create_order_note($order_id, $data);
                     ctala_log_me($mensaje);
-                    
+
 //                    $order->update_status('pending', "pago aun no recibido");
                 }
             }
