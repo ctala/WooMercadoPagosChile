@@ -329,28 +329,24 @@ class WooPagosMP extends \WC_Payment_Gateway {
                 if ($paid_amount >= $merchant_order_info["response"]["total_amount"]) {
                     if (count($merchant_order_info["response"]["shipments"]) > 0) { // The merchant_order has shipments
                         if ($merchant_order_info["response"]["shipments"][0]["status"] == "ready_to_ship") {
-                            $mensaje = "Pago total completado. Puedes entregar el pedido.";
+                            $mensaje = "Pago total completado. Puedes entregar el pedido  : $TrxId";
+                            $order->add_order_note($mensaje);
+                            $order->add_order_note("PREF ID : $PreferenceId");
                             ctala_log_me($mensaje);
                             $order->update_status('processing', "Pago recibido, se procesa la orden : $TrxId");
-                            $data['order_note'] = $mensaje;
-                            \WC_API_Orders::create_order_note($order_id, $data);
-                            wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
-                            wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                         }
                     } else { // The merchant_order don't has any shipments
                         $mensaje = "PAGO COMPLETADO $TrxId";
                         ctala_log_me($mensaje);
                         $order->update_status('processing', "Pago recibido, se procesa la orden : $TrxId");
-                        $data['order_note'] = $mensaje;
-                        \WC_API_Orders::create_order_note($order_id, $data);
-                        wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
-                        wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
+                        $order->add_order_note($mensaje);
+                        $order->add_order_note("PREF ID : $PreferenceId");
                     }
                 } else {
 
                     $mensaje = "Aun no pagado.";
-                    $data['order_note'] = $mensaje;
-                    \WC_API_Orders::create_order_note($order_id, $data);
+                    $order->add_order_note($mensaje);
+                    
                     ctala_log_me($mensaje);
 
 //                    $order->update_status('pending', "pago aun no recibido");
