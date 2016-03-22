@@ -278,6 +278,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
     /*
      * Esta funcion procesara la llamada de MP para corroborar el pago exitoso.
+     * Esta es ejecutada en más de una ocasión.
      */
 
     function process_response() {

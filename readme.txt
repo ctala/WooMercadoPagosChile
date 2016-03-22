@@ -27,6 +27,9 @@ You must configure the plugin through the WooCommerce Settings.
 
 == Changelog ==
 
+= 1.4.1 =
+* Bootstrap loaded only if needed.
+
 = 1.4 = 
 * Accept Installments
 
