@@ -87,7 +87,7 @@ function ctala_woo_mercado_pago_template($template, $template_name, $template_pa
  */
 
 function ctala_theme_name_scripts() {
-    if (is_order_received_page()) {
+    if (is_order_received_page() || is_checkout()) {
         $dir = plugin_dir_url(__FILE__);
         $bootstrapMin = $dir . "css/bootstrap.min.css";
         wp_enqueue_style('ctala_bootstrap', $bootstrapMin);
