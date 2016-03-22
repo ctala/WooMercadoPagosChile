@@ -9,6 +9,9 @@ namespace WooMercadoPagosChile;
  */
 class WooPagosMP extends \WC_Payment_Gateway {
 
+    const MP_META_KEY_ID = "_MP_ID";
+    const MP_META_KEY_REFERENCE_ID = "_MP_REF_ID";
+
     var $notification_url;
     var $listaMediosPago = array(
         "visa" => "Visa",
@@ -179,7 +182,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
         $successUrl = $this->get_return_url($order);
         $failureUrl = $this->get_return_url($order);
         $pendingUrl = $this->get_return_url($order);
-        ;
+
 
         $back_urls = array(
             'success' => $successUrl,
@@ -326,19 +329,31 @@ class WooPagosMP extends \WC_Payment_Gateway {
                 if ($paid_amount >= $merchant_order_info["response"]["total_amount"]) {
                     if (count($merchant_order_info["response"]["shipments"]) > 0) { // The merchant_order has shipments
                         if ($merchant_order_info["response"]["shipments"][0]["status"] == "ready_to_ship") {
-                            ctala_log_me("Totally paid. Print the label and release your item.");
-                            $order->update_status('processing', "Pago recibido, se procesa la orden");
+                            $mensaje = "Pago total completado. Puedes entregar el pedido.";
+                            ctala_log_me($mensaje);
+                            $order->update_status('processing', "Pago recibido, se procesa la orden : $TrxId");
+                            $data['order_note'] = $mensaje;
+                            WC_API_Orders::create_order_note($order_id, $data);
                             wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
                             wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                         }
                     } else { // The merchant_order don't has any shipments
-                        ctala_log_me("Totally paid. Release your item.");
-                        $order->update_status('processing', "Pago recibido, se procesa la orden");
+                        $mensaje = "PAGO COMPLETADO $TrxId";
+                        ctala_log_me($mensaje);
+                        $order->update_status('processing', "Pago recibido, se procesa la orden : $TrxId");
+                        $data['order_note'] = $mensaje;
+                        WC_API_Orders::create_order_note($order_id, $data);
                         wc_add_notice("PAGO COMPLETADO TrxId : $TrxId");
                         wc_add_notice("PAGO COMPLETADO PreferenceId : $PreferenceId");
                     }
                 } else {
-                    ctala_log_me("Not paid yet. Do not release your item.");
+                    
+                    $mensaje = "Aun no pagado.";
+                    $data['order_note'] = $mensaje;
+                    WC_API_Orders::create_order_note($order_id, $data);
+                    ctala_log_me($mensaje);
+                    
+//                    $order->update_status('pending', "pago aun no recibido");
                 }
             }
         }
@@ -378,7 +393,7 @@ class WooPagosMP extends \WC_Payment_Gateway {
     function checkInstallments($installments) {
         $resultado = 1;
         $installments = intval($installments);
-        
+
         if (!is_int($installments)) {
             return $resultado;
         }
