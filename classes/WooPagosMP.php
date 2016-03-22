@@ -10,7 +10,7 @@ namespace WooMercadoPagosChile;
 class WooPagosMP extends \WC_Payment_Gateway {
 
     const MP_META_KEY_ID = "_MP_ID";
-    const MP_META_KEY_REFERENCE_ID = "_MP_REF_ID";
+    const MP_META_KEY_PREFERENCE_ID = "_MP_PREF_ID";
 
     var $notification_url;
     var $listaMediosPago = array(
@@ -314,6 +314,9 @@ class WooPagosMP extends \WC_Payment_Gateway {
                 $TrxId = $merchant_order_info["response"]["id"];
                 $PreferenceId = $merchant_order_info["response"]["preference_id"];
 
+                add_post_meta($order_id, self::MP_META_KEY_ID, $TrxId, true);
+                add_post_meta($order_id, self::MP_META_KEY_PREFERENCE_ID, $PreferenceId, true);
+
                 //Creamos la OC para agregar las notas y completar en caso de que sea necesario.
                 global $woocommerce;
                 $order = new \WC_Order($order_id);
@@ -346,13 +349,31 @@ class WooPagosMP extends \WC_Payment_Gateway {
 
                     $mensaje = "Aun no pagado.";
                     $order->add_order_note($mensaje);
-                    
+
                     ctala_log_me($mensaje);
 
 //                    $order->update_status('pending', "pago aun no recibido");
                 }
             }
         }
+    }
+
+    /**
+     * Retorna el valor del meta relacionado con la PREFERENCE ID
+     * @param type $order_id
+     * @return type
+     */
+    function getOrderPrefId($order_id) {
+        return get_post_meta($order_id, self::MP_META_KEY_PREFERENCE_ID, true);
+    }
+
+    /**
+     * Retorna el ID de transaccion de MP
+     * @param type $order_id
+     * @return type
+     */
+    function getOrderMPId($order_id) {
+        return get_post_meta($order_id, self::MP_META_KEY_ID, true);
     }
 
     /**

@@ -80,7 +80,7 @@ y luego ve al siguiente link : https://www.mercadopago.com/mlc/herramientas/apli
 
 
 # Changelog
-
+* V1.4.2 Se agregan mensajes a la orden para validar su estado.
 * V1.4.1 Se carga el CSS solo cuando es necesario.
 * V1.4 Acepta pago en cuotas.
 * V1.3 Se elimina JQuery y se usa directamente desde wordpress.
